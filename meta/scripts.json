@@ -5,7 +5,7 @@
     "description": "Deploy WordPress with PHP, MariaDB, and NGINX, with SSL.",
     "command": "bash <(curl -s https://raw.githubusercontent.com/codetwig/scripts/main/scripts/wordpress.sh)",
     "tags": ["php", "mysql", "nginx"],
-    "updated": "2025-05-23"
+    "updated": "2025-05-24"
   },
   {
     "slug": "ghost",
@@ -13,7 +13,7 @@
     "description": "Install Ghost Blog with Node.js, systemd, and SSL.",
     "command": "bash <(curl -s https://raw.githubusercontent.com/codetwig/scripts/main/scripts/ghost.sh)",
     "tags": ["nodejs", "blog", "nginx"],
-    "updated": "2025-05-23"
+    "updated": "2025-05-24"
   },
   {
     "slug": "mybb",
@@ -21,7 +21,7 @@
     "description": "Install MyBB forum software with PHP and Apache.",
     "command": "bash <(curl -s https://raw.githubusercontent.com/codetwig/scripts/main/scripts/mybb.sh)",
     "tags": ["forum", "php", "apache"],
-    "updated": "2025-05-23"
+    "updated": "2025-05-24"
   },
   {
     "slug": "discourse",
@@ -29,119 +29,79 @@
     "description": "Fully install Discourse with Docker and mail config.",
     "command": "bash <(curl -s https://raw.githubusercontent.com/codetwig/scripts/main/scripts/discourse.sh)",
     "tags": ["forum", "docker", "ruby"],
-    "updated": "2025-05-23"
+    "updated": "2025-05-24"
   },
   {
     "slug": "docker",
     "name": "Docker + Compose Installer",
-    "description": "Install Docker and Docker Compose on Ubuntu.",
+    "description": "Install Docker and Docker Compose on Ubuntu securely.",
     "command": "bash <(curl -s https://raw.githubusercontent.com/codetwig/scripts/main/scripts/docker.sh)",
     "tags": ["docker", "containers", "devops"],
-    "updated": "2025-05-23"
+    "updated": "2025-05-24"
   },
   {
     "slug": "uptime-kuma",
     "name": "Uptime Kuma Installer",
-    "description": "Install Uptime Kuma for self-hosted monitoring.",
+    "description": "Deploy Uptime Kuma using Docker to monitor sites, ports, and APIs.",
     "command": "bash <(curl -s https://raw.githubusercontent.com/codetwig/scripts/main/scripts/uptime-kuma.sh)",
-    "tags": ["monitoring", "nodejs", "dashboard"],
-    "updated": "2025-05-23"
+    "tags": ["monitoring", "docker", "dashboard"],
+    "updated": "2025-05-24"
   },
   {
     "slug": "phpmyadmin",
     "name": "phpMyAdmin Installer",
-    "description": "Securely install phpMyAdmin with MariaDB access.",
+    "description": "Securely install phpMyAdmin and access via your domain.",
     "command": "bash <(curl -s https://raw.githubusercontent.com/codetwig/scripts/main/scripts/phpmyadmin.sh)",
-    "tags": ["mysql", "php", "tools"],
-    "updated": "2025-05-23"
-  },
-  {
-    "slug": "mariadb",
-    "name": "MariaDB Installer",
-    "description": "Install and secure MariaDB server on Ubuntu/Debian.",
-    "command": "bash <(curl -s https://raw.githubusercontent.com/codetwig/scripts/main/scripts/mariadb.sh)",
-    "tags": ["database", "mysql", "server"],
-    "updated": "2025-05-23"
+    "tags": ["mysql", "php", "admin"],
+    "updated": "2025-05-24"
   },
   {
     "slug": "fail2ban",
     "name": "Fail2Ban Installer",
-    "description": "Block brute-force attacks with Fail2Ban.",
+    "description": "Protect SSH and NGINX from brute-force attacks with Fail2Ban.",
     "command": "bash <(curl -s https://raw.githubusercontent.com/codetwig/scripts/main/scripts/fail2ban.sh)",
     "tags": ["security", "ssh", "server"],
-    "updated": "2025-05-23"
+    "updated": "2025-05-24"
   },
   {
-    "slug": "owncast",
-    "name": "Owncast Streaming Installer",
-    "description": "Self-host your own streaming server using Owncast.",
-    "command": "bash <(curl -s https://raw.githubusercontent.com/codetwig/scripts/main/scripts/owncast.sh)",
-    "tags": ["media", "go", "streaming"],
-    "updated": "2025-05-23"
-  },
-  {
-    "slug": "strapi",
-    "name": "Strapi CMS Installer",
-    "description": "Deploy Strapi CMS with PostgreSQL support.",
-    "command": "bash <(curl -s https://raw.githubusercontent.com/codetwig/scripts/main/scripts/strapi.sh)",
-    "tags": ["cms", "nodejs", "postgres"],
-    "updated": "2025-05-23"
-  },
-  {
-    "slug": "nginx-ssl",
-    "name": "NGINX + SSL Setup",
-    "description": "Install NGINX with a basic config and SSL.",
-    "command": "bash <(curl -s https://raw.githubusercontent.com/codetwig/scripts/main/scripts/nginx-ssl.sh)",
-    "tags": ["web", "ssl", "nginx"],
-    "updated": "2025-05-23"
-  },
-  {
-    "slug": "valet-linux",
-    "name": "Laravel Valet (Linux) Installer",
-    "description": "Install Laravel Valet on Ubuntu for dev work.",
-    "command": "bash <(curl -s https://raw.githubusercontent.com/codetwig/scripts/main/scripts/valet-linux.sh)",
-    "tags": ["laravel", "php", "dev"],
-    "updated": "2025-05-23"
-  },
-  {
-    "slug": "nodejs",
-    "name": "Node.js LTS Installer",
-    "description": "Install the latest LTS version of Node.js.",
-    "command": "bash <(curl -s https://raw.githubusercontent.com/codetwig/scripts/main/scripts/nodejs.sh)",
-    "tags": ["nodejs", "dev", "js"],
-    "updated": "2025-05-23"
+    "slug": "portainer",
+    "name": "Portainer Installer",
+    "description": "Install Portainer CE to manage Docker with a beautiful web UI.",
+    "command": "bash <(curl -s https://raw.githubusercontent.com/codetwig/scripts/main/scripts/portainer.sh)",
+    "tags": ["docker", "ui", "containers"],
+    "updated": "2025-05-24"
   },
   {
     "slug": "redis",
     "name": "Redis Server Installer",
-    "description": "Install Redis and enable systemd on Ubuntu.",
+    "description": "Install and secure Redis with a random password and memory policy.",
     "command": "bash <(curl -s https://raw.githubusercontent.com/codetwig/scripts/main/scripts/redis.sh)",
     "tags": ["cache", "redis", "database"],
-    "updated": "2025-05-23"
+    "updated": "2025-05-24"
+  },
+  {
+    "slug": "nodejs",
+    "name": "Node.js LTS Installer",
+    "description": "Install the latest Node.js LTS version and npm using n.",
+    "command": "bash <(curl -s https://raw.githubusercontent.com/codetwig/scripts/main/scripts/nodejs.sh)",
+    "tags": ["nodejs", "dev", "js"],
+    "updated": "2025-05-24"
   },
   {
     "slug": "postfix",
     "name": "Postfix Mail Server Installer",
-    "description": "Simple outbound mail server with Postfix.",
+    "description": "Install Postfix for outbound-only mail sending.",
     "command": "bash <(curl -s https://raw.githubusercontent.com/codetwig/scripts/main/scripts/postfix.sh)",
     "tags": ["email", "smtp", "server"],
-    "updated": "2025-05-23"
+    "updated": "2025-05-24"
   },
   {
-    "slug": "nextjs",
-    "name": "Next.js App Installer",
-    "description": "Deploy a Next.js project with PM2 and NGINX.",
-    "command": "bash <(curl -s https://raw.githubusercontent.com/codetwig/scripts/main/scripts/nextjs.sh)",
-    "tags": ["react", "nodejs", "nginx"],
-    "updated": "2025-05-23"
-  },
-  {
-    "slug": "ngrok",
-    "name": "Ngrok Installer",
-    "description": "Quickly install Ngrok to expose local ports.",
-    "command": "bash <(curl -s https://raw.githubusercontent.com/codetwig/scripts/main/scripts/ngrok.sh)",
-    "tags": ["devtools", "tunnel", "cli"],
-    "updated": "2025-05-23"
+    "slug": "nginx-ssl",
+    "name": "NGINX + SSL Setup",
+    "description": "Install NGINX with a basic config and Let's Encrypt SSL.",
+    "command": "bash <(curl -s https://raw.githubusercontent.com/codetwig/scripts/main/scripts/nginx-ssl.sh)",
+    "tags": ["web", "ssl", "nginx"],
+    "updated": "2025-05-24"
   },
   {
     "slug": "cron-manager",
@@ -149,14 +109,62 @@
     "description": "Easily list and create cron jobs with CLI prompts.",
     "command": "bash <(curl -s https://raw.githubusercontent.com/codetwig/scripts/main/scripts/cron-manager.sh)",
     "tags": ["automation", "admin", "cli"],
-    "updated": "2025-05-23"
+    "updated": "2025-05-24"
   },
   {
-    "slug": "install-index",
-    "name": "Install Index",
-    "description": "Browse and launch scripts interactively via CLI.",
-    "command": "bash <(curl -s https://raw.githubusercontent.com/codetwig/scripts/main/scripts/install.sh)",
-    "tags": ["menu", "cli", "installer"],
-    "updated": "2025-05-23"
+    "slug": "nextjs",
+    "name": "Next.js App Installer",
+    "description": "Deploy a Next.js project with PM2 and NGINX reverse proxy.",
+    "command": "bash <(curl -s https://raw.githubusercontent.com/codetwig/scripts/main/scripts/nextjs.sh)",
+    "tags": ["react", "nodejs", "nginx"],
+    "updated": "2025-05-24"
+  },
+  {
+    "slug": "ufw-harden",
+    "name": "UFW Firewall Hardener",
+    "description": "Secure your server with UFW and basic rate limits.",
+    "command": "bash <(curl -s https://raw.githubusercontent.com/codetwig/scripts/main/scripts/ufw-harden.sh)",
+    "tags": ["security", "firewall", "server"],
+    "updated": "2025-05-24"
+  },
+  {
+    "slug": "ngrok",
+    "name": "Ngrok Installer",
+    "description": "Install Ngrok CLI and launch a public tunnel to a local port.",
+    "command": "bash <(curl -s https://raw.githubusercontent.com/codetwig/scripts/main/scripts/ngrok.sh)",
+    "tags": ["devtools", "tunnel", "cli"],
+    "updated": "2025-05-24"
+  },
+  {
+    "slug": "valet-linux",
+    "name": "Laravel Valet (Linux)",
+    "description": "Install Laravel Valet for a dev environment on Linux.",
+    "command": "bash <(curl -s https://raw.githubusercontent.com/codetwig/scripts/main/scripts/valet-linux.sh)",
+    "tags": ["php", "laravel", "dev"],
+    "updated": "2025-05-24"
+  },
+  {
+    "slug": "mariadb-phpmyadmin",
+    "name": "MariaDB + phpMyAdmin Installer",
+    "description": "Install MariaDB and phpMyAdmin with NGINX and SSL.",
+    "command": "bash <(curl -s https://raw.githubusercontent.com/codetwig/scripts/main/scripts/mariadb-phpmyadmin.sh)",
+    "tags": ["mysql", "php", "admin"],
+    "updated": "2025-05-24"
+  },
+  {
+    "slug": "webstack-nginx",
+    "name": "Web Stack Installer (NGINX + PHP + MariaDB)",
+    "description": "Install NGINX, PHP, MariaDB, and optional SSL via Let's Encrypt.",
+    "command": "bash <(curl -s https://raw.githubusercontent.com/codetwig/scripts/main/scripts/webstack-nginx.sh)",
+    "tags": ["nginx", "php", "mysql"],
+    "updated": "2025-05-24"
+  },
+  {
+    "slug": "ghost-theme-deploy",
+    "name": "Ghost Theme Deployer",
+    "description": "Install and activate a Ghost theme from a GitHub repo.",
+    "command": "bash <(curl -s https://raw.githubusercontent.com/codetwig/scripts/main/scripts/ghost-theme-deploy.sh)",
+    "tags": ["ghost", "themes", "deploy"],
+    "updated": "2025-05-24"
   }
 ]
