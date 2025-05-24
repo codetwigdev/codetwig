@@ -11,7 +11,7 @@
     "slug": "webstack",
     "name": "Full Web Stack Installer",
     "description": "Installs NGINX or Apache, PHP, MariaDB, optional phpMyAdmin, SSL, and a coming soon page.",
-    "command": "bash <(curl -s https://raw.githubusercontent.com/codetwigdev/codetwig/main/scripts/webstack.sh)",
+    "command": "bash <(curl -s https://raw.githubusercontent.com/codetwigdev/codetwig/main/scripts/webstack/webstack.sh)",
     "tags": ["nginx", "apache", "php", "mysql", "ssl", "phpmyadmin"],
     "updated": "2025-05-24"
   },
