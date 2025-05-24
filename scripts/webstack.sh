@@ -1,5 +1,5 @@
 #!/bin/bash
-# webstack.sh - Full Web Stack Installer (NGINX or Apache, PHP, MariaDB, phpMyAdmin, SSL)
+# webstack.sh - Full Web Stack Installer (Apache/NGINX, PHP, MariaDB, SSL, phpMyAdmin, UFW)
 # Author: CodeTwig
 # Updated: 2025-05-24
 
@@ -32,7 +32,7 @@ read -p "Install phpMyAdmin? (y/N): " INSTALL_PHPMYADMIN
 INSTALL_PHPMYADMIN=$(echo "$INSTALL_PHPMYADMIN" | tr '[:upper:]' '[:lower:]')
 
 # Update & install base packages
-apt update && apt install -y software-properties-common curl gnupg2 unzip
+apt update && apt install -y software-properties-common curl gnupg2 unzip ufw
 
 # Install web server
 if [[ "$USE_APACHE" == "y" ]]; then
@@ -62,6 +62,9 @@ if [[ "$CREATE_DB" == "y" ]]; then
 
   mysql -e "ALTER USER 'root'@'localhost' IDENTIFIED BY '$DB_ROOT_PASS';"
   mysql -uroot -p"$DB_ROOT_PASS" <<EOF
+DELETE FROM mysql.user WHERE User='';
+DROP DATABASE IF EXISTS test;
+DELETE FROM mysql.db WHERE Db='test' OR Db='test\\_%';
 CREATE DATABASE $DB_NAME;
 CREATE USER '$DB_USER'@'localhost' IDENTIFIED BY '$DB_PASS';
 GRANT ALL PRIVILEGES ON $DB_NAME.* TO '$DB_USER'@'localhost';
@@ -75,7 +78,7 @@ Root Pass: $DB_ROOT_PASS"
   echo -e "$DB_INFO" > /root/db_$DOMAIN.txt
 fi
 
-# Create Coming Soon page
+# Create web root and Coming Soon page
 mkdir -p "$WEBROOT"
 cat <<EOF > "$WEBROOT/index.html"
 <!DOCTYPE html>
@@ -114,21 +117,29 @@ cat <<EOF > "$WEBROOT/index.html"
 </body>
 </html>
 EOF
+
+# Add optional phpinfo page
+cat <<EOF > "$WEBROOT/info.php"
+<?php phpinfo();
+EOF
+
 chown -R www-data:www-data "$WEBROOT"
 
 # Configure Apache
 if [[ "$USE_APACHE" == "y" ]]; then
   a2dissite 000-default.conf >/dev/null 2>&1
 
-  # Redirect HTTP to HTTPS
+  # Apache vhost with redirect + HTTPS
   cat <<EOF > /etc/apache2/sites-available/$DOMAIN.conf
 <VirtualHost *:80>
     ServerName $DOMAIN
+    ServerAlias www.$DOMAIN
     Redirect permanent / https://$DOMAIN/
 </VirtualHost>
 
 <VirtualHost *:443>
     ServerName $DOMAIN
+    ServerAlias www.$DOMAIN
     DocumentRoot $WEBROOT
     <Directory $WEBROOT>
         Options Indexes FollowSymLinks
@@ -144,9 +155,8 @@ EOF
   a2ensite $DOMAIN.conf
   systemctl reload apache2
 
-# Configure NGINX
 else
-  # Redirect HTTP to HTTPS
+  # NGINX server block with redirect + HTTPS
   cat <<EOF > /etc/nginx/sites-available/$DOMAIN
 server {
     listen 80;
@@ -189,16 +199,23 @@ if [[ "$INSTALL_PHPMYADMIN" == "y" ]]; then
   ln -s /usr/share/phpmyadmin "$WEBROOT/phpmyadmin"
 fi
 
-# SSL (after virtual host exists)
+# SSL setup
 if [[ "$ENABLE_SSL" == "y" ]]; then
   apt install -y certbot
   if [[ "$USE_APACHE" == "y" ]]; then
     apt install -y python3-certbot-apache
-    certbot --apache -d "$DOMAIN" -n --agree-tos -m "$SSL_EMAIL"
+    certbot --apache -d "$DOMAIN" -d "www.$DOMAIN" -n --agree-tos -m "$SSL_EMAIL"
   else
     apt install -y python3-certbot-nginx
-    certbot --nginx -d "$DOMAIN" -n --agree-tos -m "$SSL_EMAIL"
+    certbot --nginx -d "$DOMAIN" -d "www.$DOMAIN" -n --agree-tos -m "$SSL_EMAIL"
   fi
+fi
+
+# UFW rules (if ufw is installed)
+if command -v ufw &> /dev/null; then
+  ufw allow OpenSSH
+  ufw allow 'Nginx Full' || ufw allow 'Apache Full'
+  ufw --force enable
 fi
 
 # Done
@@ -206,3 +223,5 @@ echo -e "\n✅ Web stack installed for $DOMAIN"
 if [[ "$CREATE_DB" == "y" ]]; then
   echo "🔐 DB credentials saved to /root/db_$DOMAIN.txt"
 fi
+echo "🌐 Visit: https://$DOMAIN"
+echo "📄 Test PHP: https://$DOMAIN/info.php"
