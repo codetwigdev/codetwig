@@ -14,5 +14,19 @@
     "command": "bash <(curl -s https://raw.githubusercontent.com/codetwigdev/codetwig/main/scripts/webstack.sh)",
     "tags": ["nginx", "apache", "php", "mysql", "ssl", "phpmyadmin"],
     "updated": "2025-05-24"
+  },
+  {
+    "slug": "mybb",
+    "name": "MyBB Forum Installer",
+    "description": "Fully automated MyBB install with Apache, PHP, and MariaDB. Outputs credentials to a text file.",
+    "command": "bash <(curl -s https://raw.githubusercontent.com/codetwigdev/codetwig/main/scripts/mybb.sh)",
+    "tags": [
+      "mybb",
+      "forum",
+      "php",
+      "mysql",
+      "apache"
+    ],
+    "updated": "2025-05-24"
   }
 ]
