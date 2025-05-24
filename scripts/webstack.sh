@@ -79,9 +79,44 @@ fi
 
 # Set up web root and Coming Soon page
 mkdir -p "$WEBROOT"
-curl -sL https://codetwig.dev/assets/coming-soon.zip -o /tmp/coming-soon.zip
-unzip -o /tmp/coming-soon.zip -d "$WEBROOT"
-rm /tmp/coming-soon.zip
+cat <<EOF > "$WEBROOT/index.html"
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>$DOMAIN – Coming Soon</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      background: #161a21;
+      color: #ffffff;
+      font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      flex-direction: column;
+      text-align: center;
+    }
+    h1 {
+      font-size: 3rem;
+      margin-bottom: 1rem;
+    }
+    p {
+      font-size: 1.25rem;
+      color: #aaaaaa;
+    }
+  </style>
+</head>
+<body>
+  <h1>Coming Soon</h1>
+  <p>We're setting things up. Check back shortly.</p>
+</body>
+</html>
+EOF
+
 chown -R www-data:www-data "$WEBROOT"
 
 # Configure web server
