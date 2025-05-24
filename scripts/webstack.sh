@@ -97,20 +97,26 @@ fi
 
 chown -R www-data:www-data "$WEBROOT"
 
-# Apache HTTP → HTTPS redirect
+# Apache VirtualHost (NO redirect yet)
 a2dissite 000-default.conf >/dev/null 2>&1
 cat <<EOF > /etc/apache2/sites-available/$DOMAIN.conf
 <VirtualHost *:80>
     ServerName $DOMAIN
     ServerAlias www.$DOMAIN
-    Redirect permanent / https://$DOMAIN/
+    DocumentRoot $WEBROOT
+
+    <Directory $WEBROOT>
+        Options Indexes FollowSymLinks
+        AllowOverride All
+        Require all granted
+    </Directory>
 </VirtualHost>
 EOF
 
 a2ensite $DOMAIN.conf
 systemctl reload apache2
 
-# Install Certbot and fetch SSL
+# Install Certbot and obtain SSL (Certbot adds redirect)
 apt install -y certbot python3-certbot-apache
 certbot --apache -d "$DOMAIN" -d "www.$DOMAIN" -n --agree-tos -m "$SSL_EMAIL"
 
