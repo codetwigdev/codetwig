@@ -1,5 +1,19 @@
 [
   {
+    "slug": "mariadb-phpmyadmin",
+    "name": "MariaDB + phpMyAdmin Installer",
+    "description": "Installs and secures MariaDB, and sets up phpMyAdmin with optional DB creation and SSL.",
+    "command": "bash <(curl -s https://raw.githubusercontent.com/codetwigdev/codetwig/main/scripts/mariadb-phpmyadmin.sh)",
+    "tags": [
+      "mariadb",
+      "phpmyadmin",
+      "ssl",
+      "database",
+      "mysql"
+    ],
+    "updated": "2025-05-24"
+  },
+  {
     "slug": "webstack",
     "name": "Full Web Stack Installer",
     "description": "Installs NGINX or Apache, PHP, MariaDB, optional phpMyAdmin, SSL, and a coming soon page.",
