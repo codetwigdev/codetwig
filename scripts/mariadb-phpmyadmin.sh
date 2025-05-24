@@ -1,6 +1,6 @@
 #!/bin/bash
-# Name: MariaDB + phpMyAdmin Installer
-# Description: Secure MariaDB setup with phpMyAdmin and SSL
+# Name: MariaDB + phpMyAdmin Installer (Apache)
+# Description: Secure MariaDB setup with phpMyAdmin and SSL (multi-run safe)
 # Tags: mariadb, phpmyadmin, apache, ssl, database
 
 set -e
@@ -13,10 +13,9 @@ read -p "Enter email for SSL certificate registration: " SSL_EMAIL
 WEBROOT="/var/www/$DOMAIN"
 
 # Update and install all required packages
-apt update && apt install -y apache2 mariadb-server php php-cli php-mysql php-curl php-mbstring php-zip php-xml \
-php-gd php-json unzip ufw certbot python3-certbot-apache
+apt update && apt install -y apache2 mariadb-server php php-cli php-mysql php-curl php-mbstring php-zip php-xml php-gd php-json unzip ufw certbot python3-certbot-apache
 
-# phpMyAdmin (silent install)
+# phpMyAdmin (silent install if not already installed)
 if ! dpkg -l | grep -qw phpmyadmin; then
   echo "phpmyadmin phpmyadmin/reconfigure-webserver multiselect apache2" | debconf-set-selections
   echo "phpmyadmin phpmyadmin/dbconfig-install boolean false" | debconf-set-selections
@@ -30,14 +29,21 @@ fi
 systemctl enable apache2 mariadb
 systemctl start apache2 mariadb
 
-# Secure MariaDB
-MYSQL_ROOT_PASS=$(openssl rand -base64 16)
-mysql -e "ALTER USER 'root'@'localhost' IDENTIFIED BY '$MYSQL_ROOT_PASS';"
-mysql -e "DELETE FROM mysql.user WHERE User='';"
-mysql -e "DROP DATABASE IF EXISTS test;"
-mysql -e "FLUSH PRIVILEGES;"
-echo "$MYSQL_ROOT_PASS" > /root/mariadb_root.txt
-echo "🔐 MariaDB root password saved to /root/mariadb_root.txt"
+# Use existing MariaDB root password if available, else generate and set it
+if [ -f /root/mariadb_root.txt ]; then
+  MYSQL_ROOT_PASS=$(cat /root/mariadb_root.txt)
+else
+  MYSQL_ROOT_PASS=$(openssl rand -base64 16)
+  mysql -e "ALTER USER 'root'@'localhost' IDENTIFIED BY '$MYSQL_ROOT_PASS';"
+  mysql -uroot -p"$MYSQL_ROOT_PASS" <<EOF
+DELETE FROM mysql.user WHERE User='';
+DROP DATABASE IF EXISTS test;
+DELETE FROM mysql.db WHERE Db='test' OR Db='test\_%';
+FLUSH PRIVILEGES;
+EOF
+  echo "$MYSQL_ROOT_PASS" > /root/mariadb_root.txt
+  echo "🔐 MariaDB root password saved to /root/mariadb_root.txt"
+fi
 
 # Create secure DB and user
 DB_NAME="db_$(openssl rand -hex 4)"
