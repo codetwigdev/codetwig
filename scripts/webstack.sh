@@ -129,26 +129,12 @@ chown -R www-data:www-data "$WEBROOT"
 if [[ "$USE_APACHE" == "y" ]]; then
   a2dissite 000-default.conf >/dev/null 2>&1
 
-  # Apache vhost with redirect + HTTPS
+  # Apache HTTP vhost only — let Certbot add HTTPS block
   cat <<EOF > /etc/apache2/sites-available/$DOMAIN.conf
 <VirtualHost *:80>
     ServerName $DOMAIN
     ServerAlias www.$DOMAIN
     Redirect permanent / https://$DOMAIN/
-</VirtualHost>
-
-<VirtualHost *:443>
-    ServerName $DOMAIN
-    ServerAlias www.$DOMAIN
-    DocumentRoot $WEBROOT
-    <Directory $WEBROOT>
-        Options Indexes FollowSymLinks
-        AllowOverride All
-        Require all granted
-    </Directory>
-    SSLEngine on
-    SSLCertificateFile /etc/letsencrypt/live/$DOMAIN/fullchain.pem
-    SSLCertificateKeyFile /etc/letsencrypt/live/$DOMAIN/privkey.pem
 </VirtualHost>
 EOF
 
@@ -156,7 +142,7 @@ EOF
   systemctl reload apache2
 
 else
-  # NGINX server block with redirect + HTTPS
+  # NGINX config: includes HTTPS block directly
   cat <<EOF > /etc/nginx/sites-available/$DOMAIN
 server {
     listen 80;
