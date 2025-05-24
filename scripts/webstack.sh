@@ -118,18 +118,16 @@ cat <<EOF > "$WEBROOT/index.html"
 </html>
 EOF
 
-# Add optional phpinfo page
+# Optional phpinfo test page
 cat <<EOF > "$WEBROOT/info.php"
 <?php phpinfo();
 EOF
 
 chown -R www-data:www-data "$WEBROOT"
 
-# Configure Apache
+# Apache config
 if [[ "$USE_APACHE" == "y" ]]; then
   a2dissite 000-default.conf >/dev/null 2>&1
-
-  # Apache HTTP vhost only — let Certbot add HTTPS block
   cat <<EOF > /etc/apache2/sites-available/$DOMAIN.conf
 <VirtualHost *:80>
     ServerName $DOMAIN
@@ -137,12 +135,10 @@ if [[ "$USE_APACHE" == "y" ]]; then
     Redirect permanent / https://$DOMAIN/
 </VirtualHost>
 EOF
-
   a2ensite $DOMAIN.conf
   systemctl reload apache2
 
 else
-  # NGINX config: includes HTTPS block directly
   cat <<EOF > /etc/nginx/sites-available/$DOMAIN
 server {
     listen 80;
@@ -174,15 +170,23 @@ server {
     }
 }
 EOF
-
   ln -s /etc/nginx/sites-available/$DOMAIN /etc/nginx/sites-enabled/
   nginx -t && systemctl reload nginx
 fi
 
-# Install phpMyAdmin
+# Secure phpMyAdmin install
 if [[ "$INSTALL_PHPMYADMIN" == "y" ]]; then
-  apt install -y phpmyadmin
+  echo "phpmyadmin phpmyadmin/dbconfig-install boolean false" | debconf-set-selections
+  DEBIAN_FRONTEND=noninteractive apt install -y phpmyadmin php-mbstring php-zip php-gd php-json php-curl
+  if [[ "$USE_APACHE" == "y" ]]; then
+    phpenmod mbstring
+    systemctl restart apache2
+  fi
   ln -s /usr/share/phpmyadmin "$WEBROOT/phpmyadmin"
+  if [ -f /etc/phpmyadmin/config.inc.php ]; then
+    sed -i "/AllowRoot/d" /etc/phpmyadmin/config.inc.php
+    echo "\$cfg['Servers'][\$i]['AllowRoot'] = false;" >> /etc/phpmyadmin/config.inc.php
+  fi
 fi
 
 # SSL setup
@@ -197,7 +201,7 @@ if [[ "$ENABLE_SSL" == "y" ]]; then
   fi
 fi
 
-# UFW rules (if ufw is installed)
+# UFW firewall
 if command -v ufw &> /dev/null; then
   ufw allow OpenSSH
   ufw allow 'Nginx Full' || ufw allow 'Apache Full'
@@ -210,4 +214,4 @@ if [[ "$CREATE_DB" == "y" ]]; then
   echo "🔐 DB credentials saved to /root/db_$DOMAIN.txt"
 fi
 echo "🌐 Visit: https://$DOMAIN"
-echo "📄 Test PHP: https://$DOMAIN/info.php"
+echo "📄 PHP Info: https://$DOMAIN/info.php"
