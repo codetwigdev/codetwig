@@ -4,13 +4,7 @@
     "name": "MariaDB + phpMyAdmin Installer",
     "description": "Installs and secures MariaDB, and sets up phpMyAdmin with optional DB creation and SSL.",
     "command": "bash <(curl -s https://raw.githubusercontent.com/codetwigdev/codetwig/main/scripts/mariadb-phpmyadmin.sh)",
-    "tags": [
-      "mariadb",
-      "phpmyadmin",
-      "ssl",
-      "database",
-      "mysql"
-    ],
+    "tags": ["mariadb", "phpmyadmin", "ssl", "database", "mysql"],
     "updated": "2025-05-24"
   },
   {
@@ -18,14 +12,7 @@
     "name": "Full Web Stack Installer",
     "description": "Installs NGINX or Apache, PHP, MariaDB, optional phpMyAdmin, SSL, and a coming soon page.",
     "command": "bash <(curl -s https://raw.githubusercontent.com/codetwigdev/codetwig/main/scripts/webstack.sh)",
-    "tags": [
-      "nginx",
-      "apache",
-      "php",
-      "mysql",
-      "ssl",
-      "phpmyadmin"
-    ],
+    "tags": ["nginx", "apache", "php", "mysql", "ssl", "phpmyadmin"],
     "updated": "2025-05-24"
   }
 ]
