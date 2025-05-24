@@ -1,27 +1,33 @@
 #!/bin/bash
-# webstack.sh - Full Apache Stack Installer (PHP, MariaDB, SSL, phpMyAdmin)
+# webstack.sh - Apache Web Stack Installer (PHP, MariaDB, SSL, phpMyAdmin)
 # Author: CodeTwig
 # Updated: 2025-05-24
 
 set -e
 
-echo "🌐 Web Stack Installer (Apache + SSL + MyBB DB)"
+echo "🌐 Apache Web Stack Installer"
 
-# Prompt for domain
+# Prompt for domain and SSL email
 read -p "Enter your domain (e.g. example.com): " DOMAIN
+read -p "Enter email for SSL certificate registration (Let's Encrypt): " SSL_EMAIL
 WEBROOT="/var/www/$DOMAIN"
 
-# Prompt for SSL email
-read -p "Enter email for SSL certificate registration (Let's Encrypt): " SSL_EMAIL
+# Update and install core packages
+apt update && apt install -y software-properties-common curl gnupg2 unzip ufw apache2 libapache2-mod-php mariadb-server php php-cli php-mysql php-curl php-mbstring php-zip php-xml
 
-# Update system & install core packages
-apt update && apt install -y software-properties-common curl gnupg2 unzip ufw apache2 libapache2-mod-php mariadb-server php php-cli php-mysql php-curl php-mbstring php-zip php-xml phpmyadmin
+# Preconfigure phpMyAdmin to install silently with Apache and no DB setup
+echo "phpmyadmin phpmyadmin/reconfigure-webserver multiselect apache2" | debconf-set-selections
+echo "phpmyadmin phpmyadmin/dbconfig-install boolean false" | debconf-set-selections
+echo "phpmyadmin phpmyadmin/mysql/admin-pass password" | debconf-set-selections
+echo "phpmyadmin phpmyadmin/app-password-confirm password" | debconf-set-selections
+echo "phpmyadmin phpmyadmin/mysql/app-pass password" | debconf-set-selections
+DEBIAN_FRONTEND=noninteractive apt install -y phpmyadmin php-mbstring php-zip php-gd php-json php-curl
 
-# Enable required services
+# Enable services
 systemctl enable apache2 mariadb
 systemctl start apache2 mariadb
 
-# Secure MariaDB and create MyBB database
+# Secure MariaDB and create database/user
 DB_ROOT_PASS=$(openssl rand -base64 16)
 DB_NAME="mybb_$(openssl rand -hex 4)"
 DB_USER="user_$(openssl rand -hex 4)"
@@ -38,9 +44,10 @@ GRANT ALL PRIVILEGES ON $DB_NAME.* TO '$DB_USER'@'localhost';
 FLUSH PRIVILEGES;
 EOF
 
+# Save database credentials
 echo -e "Database: $DB_NAME\nUser: $DB_USER\nPassword: $DB_PASS\nRoot Pass: $DB_ROOT_PASS" > /root/db_$DOMAIN.txt
 
-# Setup website root with Coming Soon page
+# Create web root and Coming Soon page
 mkdir -p "$WEBROOT"
 cat <<EOF > "$WEBROOT/index.html"
 <!DOCTYPE html>
@@ -79,10 +86,10 @@ cat <<EOF > "$WEBROOT/info.php"
 <?php phpinfo();
 EOF
 
-# Link phpMyAdmin
+# Link phpMyAdmin into web root
 ln -s /usr/share/phpmyadmin "$WEBROOT/phpmyadmin"
 
-# Harden phpMyAdmin (disable root login)
+# Harden phpMyAdmin: disable root login
 if [ -f /etc/phpmyadmin/config.inc.php ]; then
   sed -i "/AllowRoot/d" /etc/phpmyadmin/config.inc.php
   echo "\$cfg['Servers'][\$i]['AllowRoot'] = false;" >> /etc/phpmyadmin/config.inc.php
@@ -90,7 +97,7 @@ fi
 
 chown -R www-data:www-data "$WEBROOT"
 
-# Apache config (redirect HTTP to HTTPS)
+# Apache HTTP → HTTPS redirect
 a2dissite 000-default.conf >/dev/null 2>&1
 cat <<EOF > /etc/apache2/sites-available/$DOMAIN.conf
 <VirtualHost *:80>
@@ -103,11 +110,11 @@ EOF
 a2ensite $DOMAIN.conf
 systemctl reload apache2
 
-# SSL Setup with Certbot
+# Install Certbot and fetch SSL
 apt install -y certbot python3-certbot-apache
 certbot --apache -d "$DOMAIN" -d "www.$DOMAIN" -n --agree-tos -m "$SSL_EMAIL"
 
-# UFW Firewall
+# UFW firewall rules
 if command -v ufw &> /dev/null; then
   ufw allow OpenSSH
   ufw allow 'Apache Full'
@@ -115,7 +122,7 @@ if command -v ufw &> /dev/null; then
 fi
 
 # Output summary
-echo -e "\n✅ Apache stack installed for $DOMAIN"
+echo -e "\n✅ Apache web stack installed for $DOMAIN"
 echo "🔐 DB credentials saved to: /root/db_$DOMAIN.txt"
 echo "🌐 Visit: https://$DOMAIN"
 echo "📄 PHP Info: https://$DOMAIN/info.php"
