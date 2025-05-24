@@ -15,6 +15,11 @@ WEBROOT="/var/www/$DOMAIN"
 read -p "Enable Let's Encrypt SSL? (y/N): " ENABLE_SSL
 ENABLE_SSL=$(echo "$ENABLE_SSL" | tr '[:upper:]' '[:lower:]')
 
+# Prompt for SSL email if enabled
+if [[ "$ENABLE_SSL" == "y" ]]; then
+  read -p "Enter email for SSL certificate registration (Let's Encrypt): " SSL_EMAIL
+fi
+
 # Prompt for Apache instead of NGINX
 read -p "Use Apache instead of NGINX? (y/N): " USE_APACHE
 USE_APACHE=$(echo "$USE_APACHE" | tr '[:upper:]' '[:lower:]')
@@ -72,10 +77,11 @@ Root Pass: $DB_ROOT_PASS"
   echo -e "$DB_INFO" > /root/db_$DOMAIN.txt
 fi
 
-# Set up web root
+# Set up web root and Coming Soon page
 mkdir -p "$WEBROOT"
-echo "<!DOCTYPE html><html><head><title>$DOMAIN</title></head><body><h1>Coming Soon</h1></body></html>" > "$WEBROOT/index.html"
-
+curl -sL https://codetwig.dev/assets/coming-soon.zip -o /tmp/coming-soon.zip
+unzip -o /tmp/coming-soon.zip -d "$WEBROOT"
+rm /tmp/coming-soon.zip
 chown -R www-data:www-data "$WEBROOT"
 
 # Configure web server
@@ -103,7 +109,7 @@ server {
     index index.php index.html;
 
     location / {
-        try_files $uri $uri/ =404;
+        try_files \$uri \$uri/ =404;
     }
 
     location ~ \.php$ {
@@ -131,10 +137,10 @@ if [[ "$ENABLE_SSL" == "y" ]]; then
   apt install -y certbot
   if [[ "$USE_APACHE" == "y" ]]; then
     apt install -y python3-certbot-apache
-    certbot --apache -d "$DOMAIN" -n --agree-tos -m admin@$DOMAIN
+    certbot --apache -d "$DOMAIN" -n --agree-tos -m "$SSL_EMAIL"
   else
     apt install -y python3-certbot-nginx
-    certbot --nginx -d "$DOMAIN" -n --agree-tos -m admin@$DOMAIN
+    certbot --nginx -d "$DOMAIN" -n --agree-tos -m "$SSL_EMAIL"
   fi
 fi
 
